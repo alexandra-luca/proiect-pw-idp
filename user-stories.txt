@@ -1,0 +1,15 @@
+User Stories
+
+As an host, I would like to be able to:
+- list my property by providing the location, number of rooms, total area, number of guests, and a list of time intervals when my property is available
+- display my name and contact details in my profile
+- update the details of my property or change its availability
+- see the profiles of the refugees that requested my property
+- accept or reject reservation requests for my property
+
+As a refugee, I would like to be able to:
+- view available housing near my area on a map
+- filter places to stay by time interval, number of rooms, area, number of guests
+- view the profiles and the contact details of hosts
+- request a reservation for a property
+- see the status of my reservation requests
