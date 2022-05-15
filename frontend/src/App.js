@@ -45,7 +45,27 @@ function App() {
 }
 
 function Home() {
-  return <h2>Home</h2>;
+  return <div>
+    <div className="home-container Subtitle">
+      <div className="home-box">
+        <p>Location</p>
+        <input type="text" placeholder="Add location"></input>
+      </div>
+      <div className="home-box">
+        <p>Check in</p>
+        <input type="date" placeholder="Add dates"></input>
+      </div>
+      <div className="home-box">
+        <p>Check out</p>
+        <input type="date" placeholder="Add dates"></input>
+      </div>
+      <div className="home-box">
+        <p>Guests</p>
+        <input type="number" placeholder="Add guests"></input>
+      </div>
+    </div>
+    <div className="button yellow">Search</div>
+  </div>;
 }
 
 function Map() {

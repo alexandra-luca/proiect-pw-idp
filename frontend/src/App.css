@@ -40,7 +40,7 @@
   color: #61dafb;
 }
 
-.Subtitle, .Subtitle a {
+.Subtitle, .Subtitle a, .Subtitle input {
   font-family: 'Quicksand';
   font-style: normal;
   font-weight: 700;
@@ -56,4 +56,59 @@
 .App-title {
   font-size: 1.5em;
   padding-left: 10px;
+}
+
+.yellow {
+  background: #FFC300;
+}
+
+.button {
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+  width: 150px;
+  height: 60px;
+
+  font-family: 'Quicksand';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.1em;
+  text-decoration: none;
+
+  margin: 0 auto;
+}
+
+/* -------------------- */
+
+.home-container {
+  display: flex;
+  flex-direction: row;
+  margin: 10vh 10vw;
+  background: #FFFDF7;
+  border-radius: 30px;
+  color: black;
+  padding: 20px;
+}
+
+.home-box {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-box:not(:first-of-type) {
+  border-left: 1px solid #B0B0B0;
+}
+
+.home-box input {
+  width: 130px;
+  color: #B0B0B0;
+  border: none;
+  background-color: transparent;
+  text-align: center;
 }
