@@ -4,6 +4,12 @@ import {AppService} from './app.service';
 import {UsersModule} from './users/users.module';
 import {KeycloakConnectModule, ResourceGuard, RoleGuard, AuthGuard} from "nest-keycloak-connect";
 import {APP_GUARD} from "@nestjs/core";
+import {LocationsModule} from './locations/locations.module';
+import {MongooseModule} from "@nestjs/mongoose";
+import {ConfigModule, ConfigService} from "@nestjs/config";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 @Module({
     imports: [
@@ -14,7 +20,17 @@ import {APP_GUARD} from "@nestjs/core";
             clientId: 'warbnb-backend-nest',
             secret: 'PF5JfUfuzywzMxSJPgViFR3HcBlEgFDY',
             // Secret key of the client taken from keycloak server
-        })],
+        }),
+        LocationsModule,
+        MongooseModule.forRootAsync({
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                uri: configService.get<string>('MONGO_URI'),
+                useNewUrlParser: true,
+                useUnifiedTopology: true
+            }), inject: [ConfigService]
+        })
+    ],
     controllers: [AppController],
     providers: [AppService,
         {provide: APP_GUARD, useClass: AuthGuard},

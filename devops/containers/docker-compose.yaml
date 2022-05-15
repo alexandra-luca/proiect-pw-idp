@@ -1,0 +1,21 @@
+version: '3'
+services:
+  backend:
+    build: ../../backend/
+    ports:
+      - '3000:3000'
+    environment:
+      MONGO_URI: "mongodb://mongo_database"
+
+  mongo_database:
+    image: 'mongo'
+    container_name: 'warbnb_database'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - /var/lib/mongodb/data:/data/db
+    ports:
+      - '27017-27019:27017-27019'
+          > 1 | db.createUser({user: "admin", pwd: "admin", roles: [{role: "userAdminAnyDatabase", db: "admin"}]})
+
