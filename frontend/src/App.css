@@ -79,6 +79,13 @@
   text-decoration: none;
 
   margin: 0 auto;
+
+  cursor: pointer;
+}
+
+.button-small {
+  width: 100px;
+  height: 30px
 }
 
 /* -------------------- */
@@ -86,11 +93,12 @@
 .home-container {
   display: flex;
   flex-direction: row;
-  margin: 10vh 10vw;
+  margin: 0 10vw 3vh 10vw;
   background: #FFFDF7;
   border-radius: 30px;
   color: black;
-  padding: 20px;
+  height: 120px;
+  padding: 10px 10px 10px 10px;
 }
 
 .home-box {
@@ -106,9 +114,18 @@
 }
 
 .home-box input {
-  width: 130px;
+  width: 180px;
   color: #B0B0B0;
   border: none;
   background-color: transparent;
   text-align: center;
+}
+
+.hosting table {
+  padding-top: 35px;
+  margin: auto;
+}
+
+.hosting td {
+  padding: 10px;
 }
