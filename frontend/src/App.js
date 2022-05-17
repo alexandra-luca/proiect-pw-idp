@@ -12,24 +12,30 @@ const hardcodedData = [
   {
     city: "Bucharest",
     address: "Str. Calea Victoriei nr. 9",
+    description: "",
     date: "20.05.2022",
     days: 5,
+    area: 200,
     guests: 4,
     contact: "021 344 566"
   },
   {
     city: "Bucharest",
     address: "Str. Stefan cel Mare nr. 156",
+    description: "",
     date: "29.07.2022",
     days: 30,
+    area: 150,
     guests: 1,
     contact: "ionel.popescu@gmail.com"
   },
   {
     city: "Bucharest",
     address: "Bd. Iuliu Maniu nr. 3",
+    description: "",
     date: "06.06.2022",
     days: 2,
+    area: 80,
     guests: 2,
     contact: "0745 12 34 56"
   }
@@ -138,6 +144,9 @@ function Map() {
 
 function Host() {
   const [housing, setHousing] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editIndex, setEditIndex] = useState(-1);
+  const [editHouse, setEditHouse] = useState(null);
 
   useEffect(() => {
     initialHandler();
@@ -152,29 +161,106 @@ function Host() {
   }
 
   function editHousing(index) {
-
+    setIsEditing(true);
+    setEditIndex(index);
+    setEditHouse(housing[index]);
   }
 
-  function deleteHousing(index) {
-
+  async function deleteHousing(index) {
+    // TODO
+    // await deleteHousing(housing[index]);
+    
+    await initialHandler();
   }
 
-  return  <div className="hosting">
-    <table>
-      {housing.map(((h, index) => 
-        <tr>
-          <td style={{textAlign: "right"}}>{h.address}</td>
-          <td style={{textAlign: "left"}}>Available for {h.days} day(s) starting from {h.date}</td>
-          <td style={{textAlign: "left"}}>{h.guests} guest(s)</td>
-          <td>
-            <div className="button yellow button-small" onClick={() => editHousing(index)}>Edit</div>
-          </td>
-          <td>
-            <div className="button yellow button-small" onClick={() => deleteHousing(index)}>Delete</div>
-          </td>
-      </tr>
-      ))}
-    </table>
+  function openCreateNewForm() {
+    setIsEditing(true);
+    setEditIndex(-1);
+    setEditHouse({
+      city: "",
+      address: "",
+      description: "",
+      date: "",
+      area: 0,
+      days: 1,
+      guests: 1,
+      contact: ""
+    })
+  }
+
+  async function save() {
+    if (editIndex === -1) {
+      // TODO
+      // await createNewHousing(editHouse);
+    } else {
+      // TODO
+      // await editExistingHousing(editHouse);
+
+      await initialHandler();
+    }
+
+    setIsEditing(false);
+  }
+
+  function cancel() {
+    setIsEditing(false);
+  }
+
+  return  <div className="hosting hosting-page">
+    { isEditing
+      ? <div className="editHost">
+          <div>
+            <span>Address</span>
+            <input type="text" value={editHouse.address} onChange={(e) => setEditHouse({...editHouse, address: e.target.value})}/>
+          </div>
+          <div>
+            <span>Description</span>
+            <input type="text" value={editHouse.description} onChange={(e) => setEditHouse({...editHouse, description: e.target.value})}/>
+          </div>
+          <div>
+            <span>Number of guests</span>
+            <input type="number" value={editHouse.guests} onChange={(e) => setEditHouse({...editHouse, guests: e.target.value})}/>
+          </div>
+          <div>
+            <span>Area</span>
+            <input type="number" value={editHouse.area} onChange={(e) => setEditHouse({...editHouse, area: e.target.value})}/>
+          </div>
+          <div>
+            <span>Contact information</span>
+            <input type="text" value={editHouse.contact} onChange={(e) => setEditHouse({...editHouse, contact: e.target.value})}/>
+          </div>
+          <div>
+            <span>Availability date</span>
+            <input type="date" value={editHouse.date} onChange={(e) => setEditHouse({...editHouse, date: e.target.value})}/>
+          </div>
+          <div>
+            <span>Number of days</span>
+            <input type="number" value={editHouse.days} onChange={(e) => setEditHouse({...editHouse, days: e.target.value})}/>
+          </div>
+          <div className="button-row">
+            <div className="button gray button-small" onClick={cancel}>Cancel</div>
+            <div className="button yellow button-small" onClick={save}>Save</div>
+          </div>
+        </div>
+      : <>
+          <table>
+            {housing.map(((h, index) => 
+              <tr>
+                <td style={{textAlign: "right"}}>{h.address}</td>
+                <td style={{textAlign: "left"}}>Available for {h.days} day(s) starting from {h.date}</td>
+                <td style={{textAlign: "left"}}>{h.guests} guest(s)</td>
+                <td>
+                  <div className="button gray button-small" onClick={() => editHousing(index)}>Edit</div>
+                </td>
+                <td>
+                  <div className="button gray button-small" onClick={() => deleteHousing(index)}>Delete</div>
+                </td>
+            </tr>
+            ))}
+          </table>
+          <div className="button yellow" onClick={openCreateNewForm}>Add new</div>
+        </>
+    }
   </div>;
 }
 

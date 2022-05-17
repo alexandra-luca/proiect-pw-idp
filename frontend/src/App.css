@@ -62,6 +62,10 @@
   background: #FFC300;
 }
 
+.gray {
+  background: #B0B0B0;
+}
+
 .button {
   border-radius: 20px;
   display: flex;
@@ -86,6 +90,20 @@
 .button-small {
   width: 100px;
   height: 30px
+}
+
+.button-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.button-row .button:first-of-type {
+  margin-right: 10px;
+}
+
+.button-row .button:nth-of-type(2) {
+  margin-left: 10px;
 }
 
 /* -------------------- */
@@ -129,3 +147,35 @@
 .hosting td {
   padding: 10px;
 }
+
+.hosting-page table {
+  margin-bottom: 50px;
+}
+
+/* -------------------- */
+
+.editHost {
+  font-family: 'Quicksand';
+}
+
+.editHost input {
+  width: 200px;
+  margin-left: 30px;
+  font-size: 18px;
+}
+
+.editHost span {
+  width: 200px;
+  display: inline-block;
+  font-size: 18px;
+  text-align: right;
+}
+
+.editHost div {
+  margin-bottom: 15px;
+}
+
+.editHost .button-row {
+  margin-top: 40px;
+}
+
