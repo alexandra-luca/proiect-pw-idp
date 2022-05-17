@@ -8,11 +8,13 @@ import {LocationsModule} from './locations/locations.module';
 import {MongooseModule} from "@nestjs/mongoose";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import * as dotenv from 'dotenv';
+import {ReservationsModule} from "./reservations/reservations.module";
 
 dotenv.config();
 
 @Module({
     imports: [
+        ConfigModule.forRoot(),
         UsersModule,
         KeycloakConnectModule.register({
             authServerUrl: 'http://localhost:8080',
@@ -22,6 +24,7 @@ dotenv.config();
             // Secret key of the client taken from keycloak server
         }),
         LocationsModule,
+        ReservationsModule,
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
