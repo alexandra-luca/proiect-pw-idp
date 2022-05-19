@@ -1,6 +1,6 @@
 {
-  "address":"Calea mosilor 296, bloc 46, scara 3",
-  "userId":"12345",
+  "address": "Calea mosilor 296, bloc 46, scara 3",
+  "userId": "12345",
   "availability": {
     "fromTimestamp": 1652618027,
     "toTimestamp": 1652618027
