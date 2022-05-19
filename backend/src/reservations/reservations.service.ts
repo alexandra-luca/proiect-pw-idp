@@ -1,16 +1,15 @@
-import {Injectable, OnModuleInit} from '@nestjs/common';
-import {Channel, connect, ConsumeMessage} from 'amqplib';
-import {InjectModel} from '@nestjs/mongoose';
-import {Reservation, ReservationDocument} from './reservation.schema';
-import {Model} from 'mongoose';
-import {ReservationDTO} from './dtos';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Channel, connect, ConsumeMessage } from 'amqplib';
+import { InjectModel } from '@nestjs/mongoose';
+import { Reservation, ReservationDocument } from './reservation.schema';
+import { Model } from 'mongoose';
+import { ReservationDTO } from './dtos';
 
 @Injectable()
 export class ReservationsService implements OnModuleInit {
   private channel: Channel;
 
-  constructor(@InjectModel(Reservation.name) private readonly reservationModel: Model<ReservationDocument>) {
-  }
+  constructor(@InjectModel(Reservation.name) private readonly reservationModel: Model<ReservationDocument>) {}
 
   async onModuleInit(): Promise<void> {
     const connection = await connect('amqp://guest:guest@localhost:5672');

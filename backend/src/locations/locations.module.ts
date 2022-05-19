@@ -1,11 +1,11 @@
-import {Module} from '@nestjs/common';
-import {LOCATIONS_SERVICE, LocationsService} from './locations.service';
-import {LocationsController} from './locations.controller';
-import {MongooseModule} from '@nestjs/mongoose';
-import {Location, LocationSchema} from './location.schema';
+import { Module } from '@nestjs/common';
+import { LOCATIONS_SERVICE, LocationsService } from './locations.service';
+import { LocationsController } from './locations.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Location, LocationSchema } from './location.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{name: Location.name, schema: LocationSchema}])],
+  imports: [MongooseModule.forFeature([{ name: Location.name, schema: LocationSchema }])],
   providers: [
     LocationsService,
     {
@@ -15,5 +15,4 @@ import {Location, LocationSchema} from './location.schema';
   ],
   controllers: [LocationsController],
 })
-export class LocationsModule {
-}
+export class LocationsModule {}

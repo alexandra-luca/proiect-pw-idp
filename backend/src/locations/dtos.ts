@@ -1,31 +1,31 @@
 export interface GeoLocation {
-    latitude: string;
-    longitude: string;
+  latitude: string;
+  longitude: string;
 }
 
 export interface LocationAvailability {
-    fromTimestamp: number;
-    toTimestamp: number;
+  fromTimestamp: number;
+  toTimestamp: number;
 }
 
 export interface CreateLocationDTO {
-    userId: string;
-    address: string;
-    geolocation: GeoLocation;
-    roomsNumber: number;
-    totalAreaSquaredMeters: number;
-    guestsNumber: number;
-    availability: LocationAvailability;
-    reserved: boolean;
+  userId: string;
+  address: string;
+  geolocation: GeoLocation;
+  roomsNumber: number;
+  totalAreaSquaredMeters: number;
+  guestsNumber: number;
+  availability: LocationAvailability;
+  reserved: boolean;
 }
 
 export interface LocationFilterDTO {
-    userId?: string;
-    address?: string;
-    geolocation?: GeoLocation;
-    roomsNumber?: number;
-    totalAreaSquaredMeters?: number;
-    guestsNumber?: number;
-    availability?: LocationAvailability;
-    reserved?: boolean;
+  userId?: string;
+  address?: string;
+  geolocation?: GeoLocation;
+  roomsNumber?: number;
+  totalAreaSquaredMeters?: number;
+  guestsNumber?: number;
+  availability?: LocationAvailability;
+  reserved?: boolean;
 }

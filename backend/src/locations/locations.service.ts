@@ -1,11 +1,11 @@
-import {Injectable} from '@nestjs/common';
-import {InjectModel} from '@nestjs/mongoose';
-import {Location, LocationDocument} from './location.schema';
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Location, LocationDocument } from './location.schema';
 import * as mongoose from 'mongoose';
-import {FilterQuery, Model} from 'mongoose';
-import {CreateLocationDTO, LocationFilterDTO} from './dtos';
-import {Channel, connect} from 'amqplib';
-import {ReservationDTO} from '../reservations/dtos';
+import { FilterQuery, Model } from 'mongoose';
+import { CreateLocationDTO, LocationFilterDTO } from './dtos';
+import { Channel, connect } from 'amqplib';
+import { ReservationDTO } from '../reservations/dtos';
 
 export const LOCATIONS_SERVICE = Symbol('LocationsService');
 
@@ -13,8 +13,7 @@ export const LOCATIONS_SERVICE = Symbol('LocationsService');
 export class LocationsService {
   private channel: Channel;
 
-  constructor(@InjectModel(Location.name) private readonly locationModel: Model<LocationDocument>) {
-  }
+  constructor(@InjectModel(Location.name) private readonly locationModel: Model<LocationDocument>) {}
 
   async onModuleInit(): Promise<void> {
     const connection = await connect('amqp://guest:guest@localhost:5672');
@@ -52,7 +51,7 @@ export class LocationsService {
   }
 
   async findByOwnerId(ownerId: string): Promise<Array<Location>> {
-    return await this.locationModel.find({userId: ownerId}).exec();
+    return await this.locationModel.find({ userId: ownerId }).exec();
   }
 
   async reserveLocation() {
@@ -69,16 +68,16 @@ export class LocationsService {
     this.channel.sendToQueue('reservations_queue', data);
 
     await this.locationModel.updateOne(
-        {_id: new mongoose.Types.ObjectId('628693fca3c429d300be07bc')},
-        {
-          $set: {
-            reserved: true,
-            reservationTimeframe: {
-              fromTimestamp: message.fromTimestamp,
-              toTimestamp: message.toTimestamp,
-            },
+      { _id: new mongoose.Types.ObjectId('628693fca3c429d300be07bc') },
+      {
+        $set: {
+          reserved: true,
+          reservationTimeframe: {
+            fromTimestamp: message.fromTimestamp,
+            toTimestamp: message.toTimestamp,
           },
-        }
+        },
+      }
     );
     return {};
   }
