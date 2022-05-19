@@ -1,0 +1,12 @@
+{
+  "realm": "Warbnb",
+  "auth-server-url": "http://localhost:8080/",
+  "ssl-required": "external",
+  "resource": "warbnb-backend-nest",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "xasxCOaIvMGGVNtIvMc9fzzwhjOKWB3O"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0
+}
