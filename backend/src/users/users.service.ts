@@ -1,6 +1,10 @@
 import {BadRequestException, Injectable} from '@nestjs/common';
 import axios from "axios";
 import * as dotenv from "dotenv";
+import {InjectModel} from "@nestjs/mongoose";
+import {Model} from "mongoose";
+import {User, UserDocument} from "./users.schema";
+import {CreateUserDTO, UpdateUserDTO} from "./dtos";
 
 export const USERS_SERVICE = Symbol('UsersService');
 
@@ -10,6 +14,22 @@ const env = dotenv.config().parsed;
 export class UsersService {
     async getUser(userId: string) {
         // return Promise.resolve(undefined);
+    }
+
+    constructor(@InjectModel(User.name) private readonly userModel: Model<UserDocument>) {
+    }
+
+    async createUser(createUser: CreateUserDTO): Promise<User> {
+        const doc = new this.userModel(createUser);
+        return await doc.save();
+    }
+
+    async updateUser(id: string, updateUser: UpdateUserDTO) {
+        try {
+            return await this.userModel.findOneAndUpdate({'_id': id}, updateUser, {upsert: true});
+        } catch (e) {
+            return e;
+        }
     }
 
     async login(username: string, password: string) {

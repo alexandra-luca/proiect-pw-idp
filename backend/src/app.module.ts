@@ -10,6 +10,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
 import * as dotenv from 'dotenv';
 
 const env = dotenv.config().parsed;
+console.log(env.MONGO_URI)
 
 @Module({
     imports: [
@@ -24,7 +25,7 @@ const env = dotenv.config().parsed;
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
-                uri: configService.get<string>('MONGO_URI'),
+                uri: env.MONGO_URI,
                 useNewUrlParser: true,
                 useUnifiedTopology: true
             }), inject: [ConfigService]
