@@ -66,6 +66,10 @@
   background: #B0B0B0;
 }
 
+.blue {
+  background: #003566;
+}
+
 .button {
   border-radius: 20px;
   display: flex;
@@ -179,3 +183,41 @@
   margin-top: 40px;
 }
 
+/* -------------------- */
+
+.login {
+  width: 48vw;
+  background: #FFFDF7;
+  color: #000814;
+  margin: 0 auto;
+
+  border: 1px solid #000000;
+  border-radius: 20px;
+}
+
+.login h2 {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #B0B0B0;
+}
+
+.login .fields {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  margin: 0 auto;
+}
+
+.login .button {
+  color: #FFFDF7;
+}
+
+.login-content {
+  height: 55vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.login-create {
+  cursor: pointer;
+}

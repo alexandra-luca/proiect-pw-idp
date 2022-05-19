@@ -265,7 +265,46 @@ function Host() {
 }
 
 function Login() {
-  return <h2>Login</h2>;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false)
+
+  async function loginOrCreate() {
+    if (isCreatingAccount) {
+      // TODO
+      // await createAccount(email, password, firstName, lastName);
+    } else {
+      // TODO
+      // await userLogin(email, password);
+    }  
+  }
+
+  function changeLoginCreate() {
+    setIsCreatingAccount(!isCreatingAccount);
+  }
+
+  return <div className="login">
+    <h2>Log in or sign up</h2>
+
+    <div className="login-content">
+      <div className="fields Subtitle">
+        <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+        <input type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+        {isCreatingAccount && 
+          <>
+            <input type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+            <input type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+          </>
+        }
+      </div>
+
+      <div className="button blue" onClick={loginOrCreate}>{isCreatingAccount ? "Create" : "Log in"}</div>
+      <div className="login-create Subtitle" onClick={changeLoginCreate}>{isCreatingAccount ? "Log in to existing account" : "Create an account" }</div>
+    </div>
+  </div>;
 }
 
 export default App;
