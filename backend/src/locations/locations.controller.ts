@@ -21,4 +21,10 @@ export class LocationsController {
     console.log(JSON.stringify(query, null, 2));
     return this.locationsService.findAll(query);
   }
+
+  @Post('reserve')
+  @Unprotected()
+  async reserveLocation() {
+    return await this.locationsService.reserveLocation();
+  }
 }

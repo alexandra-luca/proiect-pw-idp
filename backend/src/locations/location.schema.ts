@@ -19,6 +19,15 @@ export class GeoLocation {
   longitude: string;
 }
 
+@Schema({_id: false})
+export class ReservationTimeFrame {
+  @Prop({required: true, type: Number})
+  fromTimestamp: number;
+
+  @Prop({required: true, type: Number})
+  toTimestamp: number;
+}
+
 @Schema()
 export class Location {
   @Prop({required: true, type: String})
@@ -44,6 +53,9 @@ export class Location {
 
   @Prop({required: true, type: Boolean})
   reserved: boolean;
+
+  @Prop({required: false, type: Object})
+  reservationTimeframe?: ReservationTimeFrame;
 }
 
 export type LocationDocument = Location & Document;
