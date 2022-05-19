@@ -7,28 +7,27 @@ import { APP_GUARD } from '@nestjs/core';
 import { LocationsModule } from './locations/locations.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import * as dotenv from 'dotenv';
 import { ReservationsModule } from './reservations/reservations.module';
+import * as dotenv from 'dotenv';
 
-dotenv.config();
+const env = dotenv.config().parsed;
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
     UsersModule,
     KeycloakConnectModule.register({
-      authServerUrl: 'http://localhost:8080',
+      authServerUrl: `http://localhost:${env.KEYCLOAK_PORT}`,
       realm: 'Warbnb',
-      clientId: 'warbnb-backend-nest',
-      secret: 'PF5JfUfuzywzMxSJPgViFR3HcBlEgFDY',
-      // Secret key of the client taken from keycloak server
+      clientId: env.KEYCLOAK_CLIENT_ID,
+      secret: env.KEYCLOAK_SECRET,
     }),
     LocationsModule,
     ReservationsModule,
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'),
+        uri: env.MONGO_URI,
         useNewUrlParser: true,
         useUnifiedTopology: true,
       }),
