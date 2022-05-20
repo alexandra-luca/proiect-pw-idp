@@ -5,16 +5,12 @@ services:
     ports:
       - '3000:3000'
     environment:
-      MONGO_URI: "mongodb://mongo_database"
+      MONGO_URI: "mongodb://warbnb_database:27017/warbnb"
 
   mongo_database:
     image: 'mongo'
     container_name: 'warbnb_database'
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=admin
     volumes:
       - ~/proiect-pw-idp/database/data:/data/db
     ports:
-      - '27017-27019:27017-27019'
-
+      - '27017:27017'
