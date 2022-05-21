@@ -3,6 +3,7 @@ import { Location } from './location.schema';
 import { LOCATIONS_SERVICE, LocationsService } from './locations.service';
 import { Roles, Unprotected } from 'nest-keycloak-connect';
 import { CreateLocationDTO, LocationFilterDTO } from './dtos';
+import { ReservationDTO } from '../reservations/dtos';
 
 @Controller('locations')
 export class LocationsController {
@@ -22,8 +23,8 @@ export class LocationsController {
   }
 
   @Post('reserve')
-  @Unprotected()
-  async reserveLocation() {
-    return await this.locationsService.reserveLocation();
+  @Roles({ roles: ['refugee'] })
+  async reserveLocation(@Body() body: ReservationDTO): Promise<{}> {
+    return await this.locationsService.reserveLocation(body);
   }
 }

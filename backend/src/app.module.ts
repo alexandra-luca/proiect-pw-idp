@@ -18,7 +18,7 @@ console.log(env);
     ConfigModule.forRoot(),
     UsersModule,
     KeycloakConnectModule.register({
-      authServerUrl: `http://localhost:${env.KEYCLOAK_PORT}`,
+      authServerUrl: `http://localhost:${env.KEYCLOAK_PORT}/auth`,
       realm: 'Warbnb',
       clientId: env.KEYCLOAK_CLIENT_ID,
       secret: env.KEYCLOAK_SECRET,

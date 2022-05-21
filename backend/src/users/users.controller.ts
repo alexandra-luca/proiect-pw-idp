@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, OnModuleInit, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Inject, OnModuleInit, Param, Post } from '@nestjs/common';
 import { USERS_SERVICE, UsersService } from './users.service';
 import { Roles, Unprotected } from 'nest-keycloak-connect';
 import { CreateUserDTO, LoginDTO, UpdateUserDTO } from './dtos';
@@ -22,6 +22,7 @@ export class UsersController implements OnModuleInit {
 
   @Post('/login')
   @Unprotected()
+  @HttpCode(HttpStatus.OK)
   async login(@Body() body: LoginDTO) {
     return await this.usersService.login(body.email, body.password);
   }
