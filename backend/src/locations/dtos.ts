@@ -16,7 +16,7 @@ export interface CreateLocationDTO {
   totalAreaSquaredMeters: number;
   guestsNumber: number;
   availability: LocationAvailability;
-  reserved: boolean;
+  reserved?: boolean;
 }
 
 export interface LocationFilterDTO {
@@ -28,4 +28,8 @@ export interface LocationFilterDTO {
   guestsNumber?: number;
   availability?: LocationAvailability;
   reserved?: boolean;
+}
+
+export interface HeadersDTO {
+  token: string;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Location, LocationDocument } from './location.schema';
 import * as mongoose from 'mongoose';
@@ -6,6 +6,7 @@ import { FilterQuery, Model } from 'mongoose';
 import { CreateLocationDTO, LocationFilterDTO } from './dtos';
 import { Channel, connect } from 'amqplib';
 import { ReservationDTO } from '../reservations/dtos';
+import { User, UserDocument } from '../users/users.schema';
 
 export const LOCATIONS_SERVICE = Symbol('LocationsService');
 
@@ -13,7 +14,10 @@ export const LOCATIONS_SERVICE = Symbol('LocationsService');
 export class LocationsService {
   private channel: Channel;
 
-  constructor(@InjectModel(Location.name) private readonly locationModel: Model<LocationDocument>) {}
+  constructor(
+    @InjectModel(Location.name) private readonly locationModel: Model<LocationDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>
+  ) {}
 
   async onModuleInit(): Promise<void> {
     const connection = await connect('amqp://guest:guest@localhost:5672');
@@ -35,13 +39,22 @@ export class LocationsService {
   }
 
   async create(createLocationDTO: CreateLocationDTO): Promise<Location> {
-    const doc = new this.locationModel(createLocationDTO);
-    return await doc.save();
+    try {
+      const doc = new this.locationModel(createLocationDTO);
+      await doc.save();
+
+      await this.userModel.findOneAndUpdate(
+        { _id: new mongoose.Types.ObjectId(createLocationDTO.userId) },
+        { $push: { locations: doc._id } }
+      );
+      return doc;
+    } catch (e) {
+      throw new BadRequestException('Invalid request!');
+    }
   }
 
   async findAll(locationFilterDTO: LocationFilterDTO): Promise<Array<Location>> {
     const query = LocationsService.buildQuery(locationFilterDTO);
-    console.log(query);
     return await this.locationModel.find(query).exec();
   }
 
