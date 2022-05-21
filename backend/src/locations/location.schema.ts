@@ -51,7 +51,7 @@ export class Location {
   @Prop({ required: true, type: Object })
   availability: LocationAvailability;
 
-  @Prop({ required: true, type: Boolean })
+  @Prop({ required: true, type: Boolean, default: false })
   reserved: boolean;
 
   @Prop({ required: false, type: Object })

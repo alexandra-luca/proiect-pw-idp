@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, Headers } from '@nestjs/common';
 import { Location } from './location.schema';
 import { LOCATIONS_SERVICE, LocationsService } from './locations.service';
-import { Unprotected } from 'nest-keycloak-connect';
+import {Roles, Unprotected} from 'nest-keycloak-connect';
 import { CreateLocationDTO, LocationFilterDTO } from './dtos';
 
 @Controller('locations')
@@ -9,9 +9,9 @@ export class LocationsController {
   constructor(@Inject(LOCATIONS_SERVICE) private readonly locationsService: LocationsService) {}
 
   @Post()
-  @Unprotected() //TODO: change when authorization done
-  async createLocation(@Body() createLocationDTO: CreateLocationDTO): Promise<Location> {
-    return await this.locationsService.create(createLocationDTO);
+  @Roles({ roles: ['host'] })
+  async createLocation(@Body() body: CreateLocationDTO): Promise<Location> {
+    return await this.locationsService.create(body);
   }
 
   @Get()
