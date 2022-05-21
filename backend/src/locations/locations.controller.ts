@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Inject, Post, Query, Headers } from '@nestjs/common';
 import { Location } from './location.schema';
 import { LOCATIONS_SERVICE, LocationsService } from './locations.service';
-import {Roles, Unprotected} from 'nest-keycloak-connect';
+import { Roles, Unprotected } from 'nest-keycloak-connect';
 import { CreateLocationDTO, LocationFilterDTO } from './dtos';
 
 @Controller('locations')
