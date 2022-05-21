@@ -70,10 +70,10 @@ export class LocationsService {
   async reserveLocation() {
     // get message data from request
     const message: ReservationDTO = {
-      hostId: 'dummyUserId',
-      refugeeId: 'dummyrefugeeid',
-      locationId: '628693fca3c429d300be07bc',
-      fromTimestamp: Date.now(),
+      hostId: '628916ce33b9e860ca4d4ca2',
+      refugeeId: '628916eb33b9e860ca4d4ca3',
+      locationId: '62891721d1cb1c000c69a939',
+      fromTimestamp: 1652618027,
       toTimestamp: Date.now(),
     };
     const data = Buffer.from(JSON.stringify(message));

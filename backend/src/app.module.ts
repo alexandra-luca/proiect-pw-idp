@@ -11,6 +11,7 @@ import { ReservationsModule } from './reservations/reservations.module';
 import * as dotenv from 'dotenv';
 
 const env = dotenv.config().parsed;
+console.log(env);
 
 @Module({
   imports: [
