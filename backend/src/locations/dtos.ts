@@ -33,6 +33,16 @@ export interface LocationFilterDTO {
   reserved?: boolean;
 }
 
-export interface HeadersDTO {
-  token: string;
+export interface UpdateLocationDTO {
+  userId?: string;
+  address?: string;
+  city?: string;
+  contact?: string;
+  description?: string;
+  geolocation?: GeoLocation;
+  roomsNumber?: number;
+  totalAreaSquaredMeters?: number;
+  guestsNumber?: number;
+  availability?: LocationAvailability;
+  reserved?: boolean;
 }

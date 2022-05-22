@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Inject, Post, Query, Headers } from '@nestjs/common';
+import {Body, Controller, Get, Inject, Post, Query, Headers, Param, Delete} from '@nestjs/common';
 import { Location } from './location.schema';
 import { LOCATIONS_SERVICE, LocationsService } from './locations.service';
 import { Roles, Unprotected } from 'nest-keycloak-connect';
-import { CreateLocationDTO, LocationFilterDTO } from './dtos';
+import {CreateLocationDTO, LocationFilterDTO, UpdateLocationDTO} from './dtos';
 import { ReservationDTO } from '../reservations/dtos';
 
 @Controller('locations')
@@ -26,5 +26,17 @@ export class LocationsController {
   @Roles({ roles: ['refugee'] })
   async reserveLocation(@Body() body: ReservationDTO): Promise<{}> {
     return await this.locationsService.reserveLocation(body);
+  }
+
+  @Post(':locationId')
+  @Roles({ roles: ['host'] })
+  async updateLocation(@Param('locationId') locationId: string, @Body() body: UpdateLocationDTO): Promise<{}> {
+    return await this.locationsService.updateLocation(locationId, body);
+  }
+
+  @Delete(':locationId')
+  @Roles({ roles: ['host'] })
+  async deleteLocation(@Param('locationId') locationId: string): Promise<{}> {
+    return await this.locationsService.deleteLocation(locationId);
   }
 }

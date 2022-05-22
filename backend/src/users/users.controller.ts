@@ -33,6 +33,12 @@ export class UsersController implements OnModuleInit {
     return await this.usersService.getUser(id);
   }
 
+  @Get(':id/locations')
+  @Roles({ roles: ['host'] })
+  async getUserLocations(@Param('id') id: string) {
+    return await this.usersService.getUserLocations(id);
+  }
+
   @Post(':id')
   @Roles({ roles: ['host', 'refugee'] })
   async updateUser(@Param('id') id: string, @Body() body: UpdateUserDTO) {
