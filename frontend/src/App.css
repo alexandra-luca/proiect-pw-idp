@@ -20,6 +20,10 @@
   font-size: calc(10px + 2vmin);
 }
 
+.selected {
+  border-bottom: 2px solid #FFFDF7;
+}
+
 .App-header nav ul {
   display: flex;
   flex-direction: row;
@@ -40,7 +44,7 @@
   color: #61dafb;
 }
 
-.Subtitle, .Subtitle a, .Subtitle input {
+.Subtitle, .Subtitle a, .Subtitle input, .Subtitle select {
   font-family: 'Quicksand';
   font-style: normal;
   font-weight: 700;
@@ -89,6 +93,14 @@
   margin: 0 auto;
 
   cursor: pointer;
+}
+
+.button.yellow:hover {
+  background-color: #FFD60A;
+}
+
+.button.blue:hover {
+  background-color: #001D3D;
 }
 
 .button-small {
@@ -176,7 +188,7 @@
 }
 
 .editHost div {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .editHost .button-row {

@@ -8,8 +8,16 @@ import {
 } from "react-router-dom";
 import {useState, useEffect} from "react";
 import { Loader } from "@googlemaps/js-api-loader"
+import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 
-const API_KEY = "..."
+const API_KEY = "AIzaSyAxTIGM0fWILcsidKaUBfQ10PwICFg4t_g"
+
+function timestampToDate(t) {
+  var d = new Date();
+  d.setTime(t * 1000);
+  return d.toLocaleDateString();
+}
 
 const hardcodedData = [
   {
@@ -51,45 +59,81 @@ const hardcodedData = [
 ]
 
 function App() {
+  const [location, setLocation] = useState("map");
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedUserId, setLoggedUserId] = useState(null);
+  const [loggedUserToken, setLoggedUserToken] = useState(null);
+  const [loggedUserRole, setLoggedUserRole] = useState(null);
+
+  function login(userId, userToken, role) {
+    setLoggedUserId(userId);
+    setLoggedUserToken(userToken);
+    setLoggedUserRole(role);
+    setIsLoggedIn(true);
+  }
+
+  function logout() { 
+    setLoggedUserId(null);
+    setLoggedUserToken(null);
+    setLoggedUserRole(null);
+    setIsLoggedIn(false);
+  }
+
   return (
     <Router>
       <div className="App">
         <header className="App-header Subtitle White">
           <nav>
             <ul>
-              <Link to="/">
-                <li>
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <span className="App-title">Warbnb</span>
-                </li>
-              </Link>
-              <li>
-                <Link to="/">Search places</Link>
-              </li>
-              <li>
-                <Link to="/map">Housing near me</Link>
-              </li>
-              <li>
-                <Link to="/host">Become a Host</Link>
-              </li>
-              <li>
-                <Link to="/login"><div className="button blue">Log in</div></Link>
-              </li>
+              {isLoggedIn 
+                ? <>
+                    <Link to="/">
+                      <li>
+                          <img src={logo} className="App-logo" alt="logo" />
+                          <span className="App-title">Warbnb</span>
+                      </li>
+                    </Link>
+                    <li className={location == 'home' ? 'selected' : ''}>
+                      <Link to="/">Search places</Link>
+                    </li>
+                    <li className={location == 'map' ? 'selected' : ''}>
+                      <Link to="/map">Housing near me</Link>
+                    </li>
+                    <li className={location == 'host' ? 'selected' : ''}>
+                      <Link to="/host">Become a Host</Link>
+                    </li>
+                    <li>
+                      <Link to="/login"><div className="button blue" onClick={logout}>{isLoggedIn ? "Log out" : "Log in"}</div></Link>
+                    </li>
+                  </>
+                : <>
+                    <li>
+                      <img src={logo} className="App-logo" alt="logo" />
+                      <span className="App-title">Welcome to Warbnb!</span>
+                    </li>
+                  </>
+                }
             </ul>
           </nav>
         </header>
         <Routes>
-          <Route path="/map" element={<Map/>} />
-          <Route path="/host" element={<Host/>} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/" element={<Home/>} />
+          <Route path="/map" element={isLoggedIn ? <Map userId={loggedUserId} userToken={loggedUserToken} setLocation={setLocation}/> : <Login callback={login}/>} />
+          <Route path="/host" element={isLoggedIn ? <Host userId={loggedUserId} userToken={loggedUserToken} setLocation={setLocation}/> : <Login callback={login}/>} />
+          <Route path="/login" element={<Login callback={login}/>} />
+          <Route path="/" element={isLoggedIn ? <Home userId={loggedUserId} userToken={loggedUserToken} setLocation={setLocation}/> : <Login callback={login}/>} />
         </Routes>
       </div>
     </Router>
   );
 }
 
-function Home() {
+function Home({userId, userToken, setLocation}) {
+  const location = useLocation();
+  useEffect(() => {
+    setLocation("home");
+  }, []);
+
   const [searchLocation, setSearchLocation] = useState("");
   const [searchCheckin, setSearchCheckin] = useState("");
   const [searchCheckout, setSearchCheckout] = useState("");
@@ -98,16 +142,37 @@ function Home() {
   const [searchResults, setSearchResults] = useState([]);
 
   async function search() {
-    // TODO
-    // const __searchResults = await getSearchResultsFromBackend(searchLocation, searchCheckin, searchCheckout, searchGuests);
-    const __searchResults = hardcodedData;
+    const response = await axios.request({
+      method: "GET",
+      url: `http://localhost:6000/locations?city=${searchLocation}&roomsNumber=${searchGuests}&fromTimestamp=${Date.parse(searchCheckin)/1000}&toTimestamp=${Date.parse(searchCheckout)/1000}`,
+      headers: { 
+        Authorization: "Bearer " + userToken
+      }
+    });
+    const responseData = response.data;
+    const __housing = responseData.map((h) => {
+      delete h.__v;
+      return {...h, availability: {toDate: timestampToDate(h.availability.toTimestamp), fromDate: timestampToDate(h.availability.fromTimestamp)}}});
 
+
+    const __searchResults = __housing;
     setSearchResults(__searchResults);
   }
 
   async function reserve(housing) {
-    // TODO
-    // await reserveInBackend(housing);
+    const response = await axios.request({
+      method: "POST",
+      url: `http://localhost:6000/locations/reserve`,
+      headers: { 
+        Authorization: "Bearer " + userToken
+      },
+      data: { 
+        refugeeId: userId,
+        locationId: housing._id,
+        fromTimestamp: housing.availability.fromTimestamp,
+        toTimestamp: housing.availability.toTimestamp
+      }
+    });
 
     alert(`Reservation confirmed! Please contact the host at ${housing.contact}`)
   }
@@ -136,9 +201,9 @@ function Home() {
       <table>
         {searchResults.map((h => 
           <tr>
-            <td style={{textAlign: "right"}}>{h.address}</td>
-            <td style={{textAlign: "left"}}>Available for {h.days} day(s) starting from {h.date}</td>
-            <td style={{textAlign: "left"}}>{h.guests} guest(s)</td>
+            <td style={{textAlign: "right"}}>{h.address}, {h.city} ({h.totalAreaSquaredMeters} m<sup>2</sup>)</td>
+            <td style={{textAlign: "left"}}>Available from {h.availability.fromDate} to {h.availability.toDate}</td>
+            <td style={{textAlign: "left"}}>{h.guestsNumber} guest(s)</td>
             <td>
              <div className="button yellow button-small" onClick={() => reserve(h)}>Reserve</div>
             </td>
@@ -149,14 +214,17 @@ function Home() {
   </div>;
 }
 
-function Map() {
+function Map({setLocation}) {
+  const location = useLocation();
+  useEffect(() => {
+    setLocation("map");
+  }, []);
+
   useEffect(() => {
     initialHandler();
   }, [])
 
   async function initialHandler() {
-    // TODO
-    // const nearbyHouses = await getNearbyHouses(....)
     const nearbyHouses = hardcodedData;
 
     const loader = new Loader({
@@ -168,6 +236,251 @@ function Map() {
       const map = new window.google.maps.Map(document.getElementById("map"), {
         center: { lat: 44.4268, lng: 26.1025 },
         zoom: 12,
+        styles: [
+          {
+              "featureType": "administrative",
+              "elementType": "geometry.stroke",
+              "stylers": [
+                  {
+                      "visibility": "on"
+                  },
+                  {
+                      "color": "#0096aa"
+                  },
+                  {
+                      "weight": "0.30"
+                  },
+                  {
+                      "saturation": "-75"
+                  },
+                  {
+                      "lightness": "5"
+                  },
+                  {
+                      "gamma": "1"
+                  }
+              ]
+          },
+          {
+              "featureType": "administrative",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                  {
+                      "color": "#0096aa"
+                  },
+                  {
+                      "saturation": "-75"
+                  },
+                  {
+                      "lightness": "5"
+                  }
+              ]
+          },
+          {
+              "featureType": "administrative",
+              "elementType": "labels.text.stroke",
+              "stylers": [
+                  {
+                      "color": "#ffe146"
+                  },
+                  {
+                      "visibility": "on"
+                  },
+                  {
+                      "weight": "6"
+                  },
+                  {
+                      "saturation": "-28"
+                  },
+                  {
+                      "lightness": "0"
+                  }
+              ]
+          },
+          {
+              "featureType": "administrative",
+              "elementType": "labels.icon",
+              "stylers": [
+                  {
+                      "visibility": "on"
+                  },
+                  {
+                      "color": "#e6007e"
+                  },
+                  {
+                      "weight": "1"
+                  }
+              ]
+          },
+          {
+              "featureType": "landscape",
+              "elementType": "all",
+              "stylers": [
+                  {
+                      "color": "#ffe146"
+                  },
+                  {
+                      "saturation": "-28"
+                  },
+                  {
+                      "lightness": "0"
+                  }
+              ]
+          },
+          {
+              "featureType": "poi",
+              "elementType": "all",
+              "stylers": [
+                  {
+                      "visibility": "off"
+                  }
+              ]
+          },
+          {
+              "featureType": "road",
+              "elementType": "all",
+              "stylers": [
+                  {
+                      "color": "#0096aa"
+                  },
+                  {
+                      "visibility": "simplified"
+                  },
+                  {
+                      "saturation": "-75"
+                  },
+                  {
+                      "lightness": "5"
+                  },
+                  {
+                      "gamma": "1"
+                  }
+              ]
+          },
+          {
+              "featureType": "road",
+              "elementType": "labels.text",
+              "stylers": [
+                  {
+                      "visibility": "on"
+                  },
+                  {
+                      "color": "#ffe146"
+                  },
+                  {
+                      "weight": 8
+                  },
+                  {
+                      "saturation": "-28"
+                  },
+                  {
+                      "lightness": "0"
+                  }
+              ]
+          },
+          {
+              "featureType": "road",
+              "elementType": "labels.text.fill",
+              "stylers": [
+                  {
+                      "visibility": "on"
+                  },
+                  {
+                      "color": "#0096aa"
+                  },
+                  {
+                      "weight": 8
+                  },
+                  {
+                      "lightness": "5"
+                  },
+                  {
+                      "gamma": "1"
+                  },
+                  {
+                      "saturation": "-75"
+                  }
+              ]
+          },
+          {
+              "featureType": "road",
+              "elementType": "labels.icon",
+              "stylers": [
+                  {
+                      "visibility": "off"
+                  }
+              ]
+          },
+          {
+              "featureType": "transit",
+              "elementType": "all",
+              "stylers": [
+                  {
+                      "visibility": "simplified"
+                  },
+                  {
+                      "color": "#0096aa"
+                  },
+                  {
+                      "saturation": "-75"
+                  },
+                  {
+                      "lightness": "5"
+                  },
+                  {
+                      "gamma": "1"
+                  }
+              ]
+          },
+          {
+              "featureType": "water",
+              "elementType": "geometry.fill",
+              "stylers": [
+                  {
+                      "visibility": "on"
+                  },
+                  {
+                      "color": "#0096aa"
+                  },
+                  {
+                      "saturation": "-75"
+                  },
+                  {
+                      "lightness": "5"
+                  },
+                  {
+                      "gamma": "1"
+                  }
+              ]
+          },
+          {
+              "featureType": "water",
+              "elementType": "labels.text",
+              "stylers": [
+                  {
+                      "visibility": "simplified"
+                  },
+                  {
+                      "color": "#ffe146"
+                  },
+                  {
+                      "saturation": "-28"
+                  },
+                  {
+                      "lightness": "0"
+                  }
+              ]
+          },
+          {
+              "featureType": "water",
+              "elementType": "labels.icon",
+              "stylers": [
+                  {
+                      "visibility": "off"
+                  }
+              ]
+          }
+      ]
       });
 
       for (let house of nearbyHouses) {
@@ -184,7 +497,12 @@ function Map() {
   </>;
 }
 
-function Host() {
+function Host({userId, userToken, setLocation}) {
+  const location = useLocation();
+  useEffect(() => {
+    setLocation("host");
+  }, []);
+
   const [housing, setHousing] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editIndex, setEditIndex] = useState(-1);
@@ -195,9 +513,18 @@ function Host() {
   }, [])
 
   async function initialHandler() {
-    // TODO
-    // const __housing = await getHousingFromBackend(.....)
-    const __housing = hardcodedData;
+    const response = await axios.request({
+      method: "GET",
+      url: `http://localhost:6000/users/${userId}/locations`,
+      headers: { 
+        Authorization: "Bearer " + userToken
+      }
+    });
+    const responseData = response.data;
+    const __housing = responseData.map((h) => {
+      delete h.__v;
+      return {...h, availability: {toDate: timestampToDate(h.availability.toTimestamp), fromDate: timestampToDate(h.availability.fromTimestamp)}}});
+
 
     setHousing(__housing);
   }
@@ -209,9 +536,14 @@ function Host() {
   }
 
   async function deleteHousing(index) {
-    // TODO
-    // await deleteHousing(housing[index]);
-    
+    const response = await axios.request({
+      method: "DELETE",
+      url: `http://localhost:6000/locations/${housing[index]._id}`,
+      headers: { 
+        Authorization: "Bearer " + userToken
+      },
+    });
+
     await initialHandler();
   }
 
@@ -222,26 +554,47 @@ function Host() {
       city: "",
       address: "",
       description: "",
-      date: "",
-      area: 0,
-      days: 1,
-      guests: 1,
+      availability: {fromTimestamp: "", toTimestamp: "", fromDate: "", toDate: ""},
+      totalAreaSquaredMeters: 0,
+      roomsNumber: 1,
+      guestsNumber: 1,
       contact: "",
-      lat: "",
-      lng: "",
+      geolocation: { latitude: "", longitude: ""},
     })
   }
 
   async function save() {
     if (editIndex === -1) {
-      // TODO
-      // await createNewHousing(editHouse);
+      const response = await axios.request({
+        method: "POST",
+        url: `http://localhost:6000/locations`,
+        headers: { 
+          Authorization: "Bearer " + userToken
+        },
+        data: { 
+          userId,
+          ...editHouse, 
+          availability: {fromTimestamp: Date.parse(editHouse.availability.fromDate)/1000, toTimestamp: Date.parse(editHouse.availability.toDate)/1000},
+          reserved: false,
+        }
+      });
     } else {
-      // TODO
-      // await editExistingHousing(editHouse);
+      const response = await axios.request({
+        method: "POST",
+        url: `http://localhost:6000/locations/${editHouse._id}`,
+        headers: { 
+          Authorization: "Bearer " + userToken
+        },
+        data: { 
+          userId,
+          ...editHouse, 
+          _id: undefined,
+          availability: {fromTimestamp: Date.parse(editHouse.availability.fromDate)/1000, toTimestamp: Date.parse(editHouse.availability.toDate)/1000},
+        }
+      });
 
-      await initialHandler();
     }
+    await initialHandler();
 
     setIsEditing(false);
   }
@@ -258,12 +611,16 @@ function Host() {
             <input type="text" value={editHouse.address} onChange={(e) => setEditHouse({...editHouse, address: e.target.value})}/>
           </div>
           <div>
+            <span>City</span>
+            <input type="text" value={editHouse.city} onChange={(e) => setEditHouse({...editHouse, city: e.target.value})}/>
+          </div>
+          <div>
             <span>Latitude</span>
-            <input type="text" value={editHouse.lat} onChange={(e) => setEditHouse({...editHouse, lat: e.target.value})}/>
+            <input type="text" value={editHouse.geolocation.latitude} onChange={(e) => setEditHouse({...editHouse, geolocation: {latitude: e.target.value, longitude: editHouse.geolocation.longitude}})}/>
           </div>
           <div>
             <span>Longitude</span>
-            <input type="text" value={editHouse.lng} onChange={(e) => setEditHouse({...editHouse, lng: e.target.value})}/>
+            <input type="text" value={editHouse.geolocation.longitude} onChange={(e) => setEditHouse({...editHouse, geolocation: {longitude: e.target.value, latitude: editHouse.geolocation.latitude}})}/>
           </div>
           <div>
             <span>Description</span>
@@ -271,23 +628,23 @@ function Host() {
           </div>
           <div>
             <span>Number of guests</span>
-            <input type="number" value={editHouse.guests} onChange={(e) => setEditHouse({...editHouse, guests: e.target.value})}/>
+            <input type="number" value={editHouse.guestsNumber} onChange={(e) => setEditHouse({...editHouse, guestsNumber: e.target.value})}/>
           </div>
           <div>
             <span>Area</span>
-            <input type="number" value={editHouse.area} onChange={(e) => setEditHouse({...editHouse, area: e.target.value})}/>
+            <input type="number" value={editHouse.totalAreaSquaredMeters} onChange={(e) => setEditHouse({...editHouse, totalAreaSquaredMeters: e.target.value})}/>
           </div>
           <div>
             <span>Contact information</span>
             <input type="text" value={editHouse.contact} onChange={(e) => setEditHouse({...editHouse, contact: e.target.value})}/>
           </div>
           <div>
-            <span>Availability date</span>
-            <input type="date" value={editHouse.date} onChange={(e) => setEditHouse({...editHouse, date: e.target.value})}/>
+            <span>Available from date</span>
+            <input type="date" value={editHouse.availability.fromDate} onChange={(e) => setEditHouse({...editHouse, availability: {fromDate: e.target.value, toDate: editHouse.availability.toDate}})}/>
           </div>
           <div>
-            <span>Number of days</span>
-            <input type="number" value={editHouse.days} onChange={(e) => setEditHouse({...editHouse, days: e.target.value})}/>
+            <span>Available to date</span>
+            <input type="date" value={editHouse.availability.toDate} onChange={(e) => setEditHouse({...editHouse, availability: {toDate: e.target.value, fromDate: editHouse.availability.fromDate}})}/>
           </div>
           <div className="button-row">
             <div className="button gray button-small" onClick={cancel}>Cancel</div>
@@ -298,9 +655,9 @@ function Host() {
           <table>
             {housing.map(((h, index) => 
               <tr>
-                <td style={{textAlign: "right"}}>{h.address}</td>
-                <td style={{textAlign: "left"}}>Available for {h.days} day(s) starting from {h.date}</td>
-                <td style={{textAlign: "left"}}>{h.guests} guest(s)</td>
+                <td style={{textAlign: "right"}}>{h.address}, {h.city} ({h.totalAreaSquaredMeters} m<sup>2</sup>)</td>
+                <td style={{textAlign: "left"}}>Available from {h.availability.fromDate} to {h.availability.toDate}</td>
+                <td style={{textAlign: "left"}}>{h.guestsNumber} guest(s)</td>
                 <td>
                   <div className="button gray button-small" onClick={() => editHousing(index)}>Edit</div>
                 </td>
@@ -316,21 +673,51 @@ function Host() {
   </div>;
 }
 
-function Login() {
+function Login({callback}) {
+  let navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [role, setRole] = useState("");
 
   const [isCreatingAccount, setIsCreatingAccount] = useState(false)
 
   async function loginOrCreate() {
     if (isCreatingAccount) {
-      // TODO
-      // await createAccount(email, password, firstName, lastName);
+      const response = await axios.request({
+        method: "POST",
+        url: "http://localhost:6000/users/register",
+        data: {
+          email,
+          password,
+          firstName,
+          lastName,
+          role
+        }
+      });
+      const responseData = response.data;
+
+      if (responseData.token && responseData.userId) {
+        callback(responseData.userId, responseData.token, responseData.role || "host");
+        navigate("/", { replace: true });
+      }
     } else {
-      // TODO
-      // await userLogin(email, password);
+      const response = await axios.request({
+        method: "POST",
+        url: "http://localhost:6000/users/login",
+        data: {
+          email,
+          password,
+        }
+      });
+      const responseData = response.data;
+
+      if (responseData.token && responseData.userId) {
+        callback(responseData.userId, responseData.token, responseData.role || "host");
+        navigate("/", { replace: true });
+      }
     }  
   }
 
@@ -349,6 +736,11 @@ function Login() {
           <>
             <input type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
             <input type="text" placeholder="Last name" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="" disabled hidden>Select role</option>
+              <option value="host">Host</option>
+              <option value="refugee">Refugee</option>
+            </select>
           </>
         }
       </div>
