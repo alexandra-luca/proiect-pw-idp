@@ -11,7 +11,7 @@ import { Loader } from "@googlemaps/js-api-loader"
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const API_KEY = "AIzaSyAxTIGM0fWILcsidKaUBfQ10PwICFg4t_g"
+const API_KEY = "..."
 
 function timestampToDate(t) {
   var d = new Date();
