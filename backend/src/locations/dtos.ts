@@ -23,13 +23,10 @@ export interface CreateLocationDTO {
 }
 
 export interface LocationFilterDTO {
-  userId?: string;
-  address?: string;
-  geolocation?: GeoLocation;
-  roomsNumber?: number;
-  totalAreaSquaredMeters?: number;
+  city?: string;
   guestsNumber?: number;
-  availability?: LocationAvailability;
+  fromTimestamp?: number;
+  toTimestamp?: number;
   reserved?: boolean;
 }
 

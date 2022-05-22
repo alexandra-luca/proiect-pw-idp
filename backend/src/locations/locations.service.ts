@@ -33,6 +33,25 @@ export class LocationsService {
             if (!locationFilterDTO.hasOwnProperty(key)) {
                 continue;
             }
+            if (key === "fromTimestamp") {
+                query["availability.fromTimestamp"] = {
+                    $lte: +locationFilterDTO[key]
+                }
+                continue;
+            }
+            if (key === "toTimestamp") {
+                query["availability.toTimestamp"] = {
+                    $gte: +locationFilterDTO[key]
+                }
+                continue;
+            }
+            if (key === "city") {
+                query[key] = {
+                    $regex: locationFilterDTO[key],
+                    $options: 'i'
+                }
+                continue;
+            }
             query[key] = locationFilterDTO[key];
         }
 
@@ -74,6 +93,7 @@ export class LocationsService {
 
     async findAll(locationFilterDTO: LocationFilterDTO): Promise<Array<Location>> {
         const query = LocationsService.buildQuery(locationFilterDTO);
+        console.log(JSON.stringify(query, null, 2));
         return await this.locationModel.find(query).exec();
     }
 

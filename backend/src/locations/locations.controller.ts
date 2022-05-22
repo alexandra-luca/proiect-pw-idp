@@ -16,9 +16,8 @@ export class LocationsController {
   }
 
   @Get()
-  @Unprotected()
+  @Roles({ roles: ['refugee', 'host'] })
   async getDocuments(@Query() query: LocationFilterDTO) {
-    console.log(JSON.stringify(query, null, 2));
     return this.locationsService.findAll(query);
   }
 
