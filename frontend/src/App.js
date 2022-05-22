@@ -9,7 +9,7 @@ import {
 import {useState, useEffect} from "react";
 import { Loader } from "@googlemaps/js-api-loader"
 
-const API_KEY = "AIzaSyAxTIGM0fWILcsidKaUBfQ10PwICFg4t_g"
+const API_KEY = "..."
 
 const hardcodedData = [
   {
