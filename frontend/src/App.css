@@ -221,3 +221,10 @@
 .login-create {
   cursor: pointer;
 }
+
+/* ---------------- */
+
+#map {
+  height: 75vh;
+  width: 100%;
+}

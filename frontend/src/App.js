@@ -7,6 +7,9 @@ import {
   Link
 } from "react-router-dom";
 import {useState, useEffect} from "react";
+import { Loader } from "@googlemaps/js-api-loader"
+
+const API_KEY = "AIzaSyAxTIGM0fWILcsidKaUBfQ10PwICFg4t_g"
 
 const hardcodedData = [
   {
@@ -17,7 +20,9 @@ const hardcodedData = [
     days: 5,
     area: 200,
     guests: 4,
-    contact: "021 344 566"
+    contact: "021 344 566",
+    lat: 44.43139,
+    lng: 26.09674,
   },
   {
     city: "Bucharest",
@@ -27,7 +32,9 @@ const hardcodedData = [
     days: 30,
     area: 150,
     guests: 1,
-    contact: "ionel.popescu@gmail.com"
+    contact: "ionel.popescu@gmail.com",
+    lat: 44.45198,
+    lng: 26.11993,
   },
   {
     city: "Bucharest",
@@ -37,7 +44,9 @@ const hardcodedData = [
     days: 2,
     area: 80,
     guests: 2,
-    contact: "0745 12 34 56"
+    contact: "0745 12 34 56",
+    lat: 44.43443,
+    lng: 26.05625,
   }
 ]
 
@@ -48,10 +57,12 @@ function App() {
         <header className="App-header Subtitle White">
           <nav>
             <ul>
-              <li>
-               <img src={logo} className="App-logo" alt="logo" />
-               <span className="App-title">Warbnb</span>
-              </li>
+              <Link to="/">
+                <li>
+                    <img src={logo} className="App-logo" alt="logo" />
+                    <span className="App-title">Warbnb</span>
+                </li>
+              </Link>
               <li>
                 <Link to="/">Search places</Link>
               </li>
@@ -62,7 +73,7 @@ function App() {
                 <Link to="/host">Become a Host</Link>
               </li>
               <li>
-                <Link to="/login">Log in</Link>
+                <Link to="/login"><div className="button blue">Log in</div></Link>
               </li>
             </ul>
           </nav>
@@ -121,7 +132,7 @@ function Home() {
       </div>
     </div>
     <div className="button yellow" onClick={search}>Search</div>
-    <div className="search-results">
+    <div className="hosting">
       <table>
         {searchResults.map((h => 
           <tr>
@@ -139,7 +150,38 @@ function Home() {
 }
 
 function Map() {
-  return <h2>Map</h2>;
+  useEffect(() => {
+    initialHandler();
+  }, [])
+
+  async function initialHandler() {
+    // TODO
+    // const nearbyHouses = await getNearbyHouses(....)
+    const nearbyHouses = hardcodedData;
+
+    const loader = new Loader({
+      apiKey: API_KEY,
+      version: "weekly",
+    });
+    
+    loader.load().then(() => {
+      const map = new window.google.maps.Map(document.getElementById("map"), {
+        center: { lat: 44.4268, lng: 26.1025 },
+        zoom: 12,
+      });
+
+      for (let house of nearbyHouses) {
+        new window.google.maps.Marker({
+          position: { lat: house.lat, lng: house.lng },
+          map: map,
+        });
+      }
+    });
+  }
+
+  return <>
+    <div id="map"></div>
+  </>;
 }
 
 function Host() {
@@ -184,7 +226,9 @@ function Host() {
       area: 0,
       days: 1,
       guests: 1,
-      contact: ""
+      contact: "",
+      lat: "",
+      lng: "",
     })
   }
 
@@ -212,6 +256,14 @@ function Host() {
           <div>
             <span>Address</span>
             <input type="text" value={editHouse.address} onChange={(e) => setEditHouse({...editHouse, address: e.target.value})}/>
+          </div>
+          <div>
+            <span>Latitude</span>
+            <input type="text" value={editHouse.lat} onChange={(e) => setEditHouse({...editHouse, lat: e.target.value})}/>
+          </div>
+          <div>
+            <span>Longitude</span>
+            <input type="text" value={editHouse.lng} onChange={(e) => setEditHouse({...editHouse, lng: e.target.value})}/>
           </div>
           <div>
             <span>Description</span>
@@ -292,7 +344,7 @@ function Login() {
     <div className="login-content">
       <div className="fields Subtitle">
         <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
-        <input type="text" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}/>
         {isCreatingAccount && 
           <>
             <input type="text" placeholder="First name" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
