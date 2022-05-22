@@ -1,8 +1,8 @@
-import {Body, Controller, Get, Inject, Post, Query, Headers, Param, Delete} from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, Query, Headers, Param, Delete } from '@nestjs/common';
 import { Location } from './location.schema';
 import { LOCATIONS_SERVICE, LocationsService } from './locations.service';
 import { Roles, Unprotected } from 'nest-keycloak-connect';
-import {CreateLocationDTO, LocationFilterDTO, UpdateLocationDTO} from './dtos';
+import { CreateLocationDTO, LocationFilterDTO, UpdateLocationDTO } from './dtos';
 import { ReservationDTO } from '../reservations/dtos';
 
 @Controller('locations')
