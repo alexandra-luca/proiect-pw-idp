@@ -10,7 +10,10 @@ export class User {
   email: string;
 
   @Prop({ required: true, type: String })
-  fullName: string;
+  firstName: string;
+
+  @Prop({ required: true, type: String })
+  lastName: string;
 
   @Prop({ required: false, type: String })
   phoneNumber: string;

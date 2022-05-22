@@ -29,7 +29,7 @@ export class UsersService {
       const config = {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${adminToken}`,
+          'Authorization': `Bearer ${adminToken}`,
         },
       };
 
@@ -92,7 +92,7 @@ export class UsersService {
         const user = await this.userModel.findOne({ email: preferred_username });
 
         if (user) {
-          return { token: response.data.access_token, user_id: user._id };
+          return { token: response.data.access_token, userId: user._id };
         }
 
         return { token: response.data.access_token };

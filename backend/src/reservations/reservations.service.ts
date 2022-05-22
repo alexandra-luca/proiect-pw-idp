@@ -57,11 +57,11 @@ export class ReservationsService implements OnModuleInit {
   }
 
   private async sendMailToUsers(reservationData: ReservationDTO) {
-    const hostdata = await this.userModel.findOne({ _id: new mongoose.Types.ObjectId(reservationData.hostId) });
     const refugeeData = await this.userModel.findOne({ _id: new mongoose.Types.ObjectId(reservationData.refugeeId) });
     const locationData = await this.locationModel.findOne({
       _id: new mongoose.Types.ObjectId(reservationData.locationId),
     });
+    const hostdata = await this.userModel.findOne({ _id: new mongoose.Types.ObjectId(locationData.userId) });
 
     await this.sendMailToHost(hostdata, refugeeData, locationData, reservationData);
     await this.sendMailToRefugee(hostdata, refugeeData, locationData, reservationData);

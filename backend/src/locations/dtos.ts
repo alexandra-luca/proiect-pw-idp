@@ -11,6 +11,9 @@ export interface LocationAvailability {
 export interface CreateLocationDTO {
   userId: string;
   address: string;
+  city: string;
+  contact: string;
+  description?: string;
   geolocation: GeoLocation;
   roomsNumber: number;
   totalAreaSquaredMeters: number;

@@ -36,6 +36,15 @@ export class Location {
   @Prop({ required: true, type: String })
   address: string;
 
+  @Prop({ required: true, type: String })
+  city: string;
+
+  @Prop({ required: true, type: String })
+  contact: string;
+
+  @Prop({ required: false, type: String })
+  description: string;
+
   @Prop({ required: true, type: Object })
   geolocation: GeoLocation;
 

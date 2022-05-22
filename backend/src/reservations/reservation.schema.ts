@@ -4,9 +4,6 @@ import { Document } from 'mongoose';
 @Schema()
 export class Reservation {
   @Prop({ required: true, type: String })
-  hostId: string;
-
-  @Prop({ required: true, type: String })
   refugeeId: string;
 
   @Prop({ required: true, type: String })
