@@ -1,0 +1,16 @@
+version: '3'
+services:
+  backend:
+    build: ../../backend/
+    ports:
+      - '3000:3000'
+    environment:
+      MONGO_URI: "mongodb://warbnb_database:27017/warbnb"
+
+  mongo_database:
+    image: 'mongo'
+    container_name: 'warbnb_database'
+    volumes:
+      - ~/proiect-pw-idp/database/data:/data/db
+    ports:
+      - '27017:27017'
