@@ -53,7 +53,7 @@ export class LocationsService {
       }
       query[key] = locationFilterDTO[key];
     }
-
+    query['reserved'] = false;
     return query;
   }
 
